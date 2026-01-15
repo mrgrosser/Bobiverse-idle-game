@@ -23,8 +23,8 @@ A web-based idle/incremental game inspired by Dennis E. Taylor's Bobiverse serie
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/bobiverse-idle-game.git
-cd bobiverse-idle-game
+git clone https://github.com/mrgrosser/Bobiverse-idle-game.git
+cd Bobiverse-idle-game
 ```
 
 2. Build and run with Docker Compose:
@@ -61,15 +61,25 @@ Access the game at `http://localhost:3000`
 4. **Purchase Upgrades**: Enhance your mining efficiency and reduce replication costs
 5. **Expand Your Empire**: Work your way from Earth to the Sun!
 
-### Location Progression
-- 🌍 **Earth** (1x) - Starting location
+### Locations & Mining Multipliers
+- 🌍 **Earth** (1x) - Starting location - Free
 - ♂ **Mars** (1.25x) - Unlock cost: 300
-- 🪨 **Asteroid Belt** (1.5x) - Unlock cost: 500
 - ♀ **Venus** (1.6x) - Unlock cost: 800
+- 🪨 **Asteroid Belt** (1.5x) - Unlock cost: 500
 - ☿ **Mercury** (1.75x) - Unlock cost: 1,000
 - ♃ **Jupiter** (2x) - Unlock cost: 2,000
 - ♄ **Saturn** (2.5x) - Unlock cost: 5,000
 - ☀️ **Sol** (4x) - Unlock cost: 20,000
+
+**Travel Routes:**
+- From Earth: Travel to Mars or Venus
+- From Mars: Travel to Earth or Asteroid Belt
+- From Venus: Travel to Earth or Mercury
+- From Asteroid Belt: Travel to Mars, Mercury, or Jupiter
+- From Mercury: Travel to Venus, Asteroid Belt, or Sol
+- From Jupiter: Travel to Asteroid Belt or Saturn
+- From Saturn: Travel to Jupiter or Sol
+- From Sol: Travel to Mercury or Saturn
 
 ## 🐳 Docker Deployment Details
 
