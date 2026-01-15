@@ -17,14 +17,7 @@ const locations = {
         description: 'Home base. The journey begins here.',
         miningMultiplier: 1,
         unlockCost: 0,
-        connections: ['asteroid-belt', 'mars']
-    },
-    'asteroid-belt': {
-        name: 'Asteroid Belt',
-        description: 'Rich in raw materials. Mining efficiency +50%.',
-        miningMultiplier: 1.5,
-        unlockCost: 500,
-        connections: ['earth', 'mars', 'jupiter']
+        connections: ['mars', 'venus']
     },
     mars: {
         name: 'Mars',
@@ -32,6 +25,27 @@ const locations = {
         miningMultiplier: 1.25,
         unlockCost: 300,
         connections: ['earth', 'asteroid-belt']
+    },
+    venus: {
+        name: 'Venus',
+        description: 'Harsh environment, rich rewards. Mining efficiency +60%.',
+        miningMultiplier: 1.6,
+        unlockCost: 800,
+        connections: ['earth', 'mercury']
+    },
+    'asteroid-belt': {
+        name: 'Asteroid Belt',
+        description: 'Rich in raw materials. Mining efficiency +50%.',
+        miningMultiplier: 1.5,
+        unlockCost: 500,
+        connections: ['mars', 'mercury', 'jupiter']
+    },
+    mercury: {
+        name: 'Mercury',
+        description: 'Dense with metals. Mining efficiency +75%.',
+        miningMultiplier: 1.75,
+        unlockCost: 1000,
+        connections: ['venus', 'asteroid-belt', 'sun']
     },
     jupiter: {
         name: 'Jupiter',
@@ -52,21 +66,7 @@ const locations = {
         description: 'The ultimate power source. Mining efficiency +300%.',
         miningMultiplier: 4,
         unlockCost: 20000,
-        connections: ['saturn']
-    },
-    mercury: {
-        name: 'Mercury',
-        description: 'Dense with metals. Mining efficiency +75%.',
-        miningMultiplier: 1.75,
-        unlockCost: 1000,
-        connections: ['venus', 'sun']
-    },
-    venus: {
-        name: 'Venus',
-        description: 'Harsh environment, rich rewards. Mining efficiency +60%.',
-        miningMultiplier: 1.6,
-        unlockCost: 800,
-        connections: ['earth', 'mercury']
+        connections: ['mercury', 'saturn']
     }
 };
 
@@ -153,29 +153,33 @@ function updateTravelButtons() {
 
 function travelTo(locationId) {
     const location = locations[locationId];
-    
+
     // Check if location needs to be unlocked
     if (!gameState.unlockedLocations.includes(locationId)) {
         if (gameState.resources >= location.unlockCost) {
             gameState.resources -= location.unlockCost;
             gameState.unlockedLocations.push(locationId);
-            
+
             // Mark location as unlocked on map
             const element = document.querySelector(`[data-location="${locationId}"]`);
             if (element) {
                 element.classList.add('unlocked');
             }
+
+            showMessage(`${location.name} unlocked! Traveling now...`, 'success');
         } else {
+            const needed = Math.floor(location.unlockCost - gameState.resources);
+            showMessage(`Need ${needed.toLocaleString()} more resources to unlock ${location.name}`, 'error');
             return;
         }
     }
 
     // Animate probe travel
     animateProbeTravel(gameState.currentLocation, locationId);
-    
+
     // Update current location
     gameState.currentLocation = locationId;
-    
+
     // Update active state on map
     document.querySelectorAll('.celestial-body').forEach(el => el.classList.remove('active'));
     const newLocation = document.querySelector(`[data-location="${locationId}"]`);
@@ -262,6 +266,27 @@ document.getElementById('reset-btn').addEventListener('click', () => {
     }
 });
 
+// Message display system
+function showMessage(text, type = 'info') {
+    // Remove existing message if any
+    const existingMessage = document.querySelector('.game-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
+    // Create new message
+    const message = document.createElement('div');
+    message.className = `game-message ${type}`;
+    message.textContent = text;
+    document.body.appendChild(message);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        message.classList.add('fade-out');
+        setTimeout(() => message.remove(), 300);
+    }, 3000);
+}
+
 // Save/Load System
 async function saveGame() {
     try {
@@ -270,27 +295,35 @@ async function saveGame() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(gameState)
         });
-        
+
         if (response.ok) {
             const btn = document.getElementById('save-btn');
             const originalText = btn.textContent;
             btn.textContent = '✓ Saved!';
             setTimeout(() => btn.textContent = originalText, 2000);
+        } else {
+            showMessage('Failed to save game', 'error');
         }
     } catch (error) {
         console.error('Save failed:', error);
+        showMessage('Failed to save game. Check your connection.', 'error');
     }
 }
 
 async function loadGame() {
     try {
         const response = await fetch('/api/game');
-        const data = await response.json();
-        
-        if (data.idleEarnings > 0) {
-            console.log(`Earned ${Math.floor(data.idleEarnings)} resources while away!`);
+
+        if (!response.ok) {
+            throw new Error('Failed to load game state');
         }
-        
+
+        const data = await response.json();
+
+        if (data.idleEarnings > 0) {
+            showMessage(`Earned ${Math.floor(data.idleEarnings).toLocaleString()} resources while away!`, 'success');
+        }
+
         gameState = {
             resources: data.resources,
             probes: data.probes,
@@ -301,7 +334,7 @@ async function loadGame() {
             upgrades: data.upgrades,
             totalMined: data.totalMined
         };
-        
+
         // Update map to show unlocked locations
         gameState.unlockedLocations.forEach(locationId => {
             const element = document.querySelector(`[data-location="${locationId}"]`);
@@ -309,33 +342,39 @@ async function loadGame() {
                 element.classList.add('unlocked');
             }
         });
-        
+
         // Set active location
         document.querySelectorAll('.celestial-body').forEach(el => el.classList.remove('active'));
         const activeElement = document.querySelector(`[data-location="${gameState.currentLocation}"]`);
         if (activeElement) {
             activeElement.classList.add('active');
         }
-        
+
         updateUI();
         initializeProbePosition();
-        
+
         // Move probe to current location
         setTimeout(() => {
             animateProbeTravel('earth', gameState.currentLocation);
         }, 100);
-        
+
     } catch (error) {
         console.error('Load failed:', error);
+        showMessage('Failed to load game. Starting fresh.', 'error');
     }
 }
 
 async function resetGame() {
     try {
-        await fetch('/api/reset', { method: 'POST' });
-        location.reload();
+        const response = await fetch('/api/reset', { method: 'POST' });
+        if (response.ok) {
+            location.reload();
+        } else {
+            showMessage('Failed to reset game', 'error');
+        }
     } catch (error) {
         console.error('Reset failed:', error);
+        showMessage('Failed to reset game. Check your connection.', 'error');
     }
 }
 
