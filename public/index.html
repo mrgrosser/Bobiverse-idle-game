@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bobiverse: Von Neumann Probe Idle Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛸 Bobiverse: Probe Expansion Protocol</h1>
+            <p class="subtitle">A Von Neumann Probe Idle Game</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Stats and Actions -->
+            <div class="left-panel">
+                <div class="stats-panel">
+                    <h2>Resources</h2>
+                    <div class="stat-item">
+                        <span class="stat-label">Raw Materials:</span>
+                        <span class="stat-value" id="resources">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Probes:</span>
+                        <span class="stat-value" id="probes">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mining Rate:</span>
+                        <span class="stat-value" id="mining-rate">1</span>
+                        <span class="stat-unit">/sec</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Mined:</span>
+                        <span class="stat-value" id="total-mined">0</span>
+                    </div>
+                </div>
+
+                <div class="actions-panel">
+                    <h2>Actions</h2>
+                    <button id="mine-btn" class="action-btn">
+                        ⛏️ Mine Resources
+                    </button>
+                    <button id="replicate-btn" class="action-btn">
+                        🔬 Replicate Probe
+                        <span class="cost" id="replicate-cost">(Cost: 100)</span>
+                    </button>
+                </div>
+
+                <div class="upgrades-panel">
+                    <h2>Upgrades</h2>
+                    <button class="upgrade-btn" data-upgrade="mining1">
+                        ⚡ Enhanced Mining
+                        <span class="upgrade-desc">+1 mining rate per probe</span>
+                        <span class="cost">Cost: 500</span>
+                    </button>
+                    <button class="upgrade-btn" data-upgrade="efficiency1">
+                        🔧 Efficient Replication
+                        <span class="upgrade-desc">-10% replication cost</span>
+                        <span class="cost">Cost: 1000</span>
+                    </button>
+                    <button class="upgrade-btn" data-upgrade="mining2" disabled>
+                        ⚡⚡ Advanced Mining
+                        <span class="upgrade-desc">+2 mining rate per probe</span>
+                        <span class="cost">Cost: 2500</span>
+                    </button>
+                    <button class="upgrade-btn" data-upgrade="automation1">
+                        🤖 Basic Automation
+                        <span class="upgrade-desc">2x idle mining</span>
+                        <span class="cost">Cost: 5000</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Center Panel: Solar System Map -->
+            <div class="center-panel">
+                <div class="solar-system-container">
+                    <h2>Solar System Map</h2>
+                    <div id="solar-system" class="solar-system">
+                        <!-- Sun -->
+                        <div class="celestial-body sun" data-location="sun">
+                            <div class="body-label">☀️ Sol</div>
+                        </div>
+
+                        <!-- Planets -->
+                        <div class="celestial-body planet mercury" data-location="mercury">
+                            <div class="body-label">☿ Mercury</div>
+                        </div>
+                        <div class="celestial-body planet venus" data-location="venus">
+                            <div class="body-label">♀ Venus</div>
+                        </div>
+                        <div class="celestial-body planet earth active" data-location="earth">
+                            <div class="body-label">🌍 Earth</div>
+                        </div>
+                        <div class="celestial-body planet mars" data-location="mars">
+                            <div class="body-label">♂ Mars</div>
+                        </div>
+
+                        <!-- Asteroid Belt -->
+                        <div class="celestial-body asteroid belt1" data-location="asteroid-belt">
+                            <div class="body-label">🪨 Asteroids</div>
+                        </div>
+
+                        <!-- Outer Planets -->
+                        <div class="celestial-body planet jupiter" data-location="jupiter">
+                            <div class="body-label">♃ Jupiter</div>
+                        </div>
+                        <div class="celestial-body planet saturn" data-location="saturn">
+                            <div class="body-label">♄ Saturn</div>
+                        </div>
+
+                        <!-- Probe -->
+                        <div id="probe" class="probe">🛸</div>
+
+                        <!-- Travel Path -->
+                        <svg id="travel-path" class="travel-path">
+                            <path id="path-line" d="" stroke="#00ffff" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        </svg>
+                    </div>
+
+                    <div class="location-info">
+                        <h3>Current Location: <span id="current-location">Earth</span></h3>
+                        <p id="location-description">Home base. The journey begins here.</p>
+                        <div id="travel-buttons" class="travel-buttons">
+                            <!-- Travel buttons will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <button id="save-btn" class="footer-btn">💾 Save Game</button>
+            <button id="reset-btn" class="footer-btn danger">🔄 Reset Game</button>
+            <span class="version">v1.0.0</span>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
